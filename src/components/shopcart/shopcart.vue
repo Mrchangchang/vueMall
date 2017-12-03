@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="ball-container">
-            <transition-group name="drop" tag="div" 
+            <transition-group name="drop" tag="div"
             v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:after-enter="afterEnter">
                 <div v-for="ball in balls" v-show="ball.show" class="ball" :key="ball.id">
                     <div class="inner inner-hook"></div>
@@ -63,7 +63,7 @@ export default {
             }
         },
         deliveryPrice:Number,
-        minPrice:Number        
+        minPrice:Number
     },
     data() {
         return {
@@ -135,7 +135,7 @@ export default {
                     }else {
                         this.scroll.refresh()
                     }
-                    
+
                 })
             };
             return show;
@@ -330,7 +330,7 @@ export default {
         left: 0
         z-index: -1
         width: 100%
-        transition: all 0.5s 
+        transition: all 0.5s
         transform: translate3d(0,-100%,0)
         &.fold-enter,&.fold-leave-active
             transform: translate3d(0,0,0)
@@ -384,7 +384,7 @@ export default {
         background: rgba(7,17,27,0.6)
         backdrop-filter: blur(10px)
         &.fade-enter,&.fald-leave-active
-        transition: all 0.5s
+            transition: all 0.5s
             opacity: 0
             background: rgba(7,17,27,0.6)
 </style>

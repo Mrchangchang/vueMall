@@ -35,26 +35,29 @@
                 <split></split>
                 <div class="rating">
                     <h1 class="title">商品评价</h1>
-                    <ratingselect :select-type="selectType" v-on="{'select':_select,'toggleContent':_toggleContent}" 
+                    <ratingselect :select-type="selectType" v-on="{'select':_select,'toggleContent':_toggleContent}"
                     :only-content="onlyContent" :desc="desc" :ratings="food.ratings">
                     </ratingselect>
                     <div class="rating-wrapper">
                         <ul v-show="food.ratings && food.ratings.length" class="">
-                            <li v-for ="rating in food.ratings" class="rating-item">
+                            <li v-show="needShow(rating.rateType,rating.text)" v-for ="rating in food.ratings" class="rating-item border-1px">
                                 <div class="user">
-                                    <span class="name">{{rating.name}}</span>
+                                    <span class="name">{{rating.username}}</span>
                                     <img class="avatar" width="12" height="12" :src="rating.avatar">
                                 </div>
-                                <div class="time">{{rateTime}}</div>
+                                <div class="time">{{rating.rateTime|formatDate}}</div>
+                                <p class="text">
+                                    <span :class="{'icon-thumb_up':rating.rateType===0,'icon-thumb_down':rating.rateType===1}"></span>{{rating.text}}
+                                </p>
                             </li>
                         </ul>
-                        <div class="notayinys" v-show="!food.ratings || !food.ratings.length" ></div>
+                        <div class="no-rating" v-show="!food.ratings || !food.ratings.length" >暂无评价</div>
                     </div>
                 </div>
             </div>
         </div>
     </transition>
-    
+
 </template>
 <script type="text/ecmascript-6">
 import BScroll from "Better-scroll"
@@ -63,6 +66,7 @@ import Bus from "../bus/bus.vue";
 import Vue from "vue";
 import split from "../split/split.vue";
 import ratingselect from "../ratingselect/ratingselect.vue";
+import {formatDate} from "../../common/js/date.js"
     const POSITIVE = 0;
     const NEGATIVE = 1;
     const ALL = 2;
@@ -113,10 +117,32 @@ import ratingselect from "../ratingselect/ratingselect.vue";
                 Vue.set(this.food,"count",1)
             },
             _select(event) {
-                this.selectType = event
+                this.selectType = event;
+                this.$nextTick(() => {
+                    this.scroll.refresh();
+                })
             },
             _toggleContent(event) {
                 this.onlyContent = !this.onlyContent;
+                this.$nextTick(() => {
+                    this.scroll.refresh();
+                })
+            },
+            needShow(type, text) {
+                if (!this.onlyContent &&!text) {
+                    return false;
+                }
+                if (this.selectType === ALL) {
+                    return true;
+                } else {
+                    return type === this.selectType;
+                }
+            }
+        },
+        filters: {
+            formatDate(time) {
+                let date = new Date(time);
+                return formatDate(date, 'yyyy-MM-dd hh:mm')
             }
         },
         components: {
@@ -128,6 +154,7 @@ import ratingselect from "../ratingselect/ratingselect.vue";
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style rel="stylesheet/stylus" lang="stylus">
+    @import "../../common/stylus/mixin.styl";
     .food
         position: fixed
         left: 0
@@ -205,9 +232,10 @@ import ratingselect from "../ratingselect/ratingselect.vue";
                 border-radius: 12px
                 color: #fff
                 background: rgb(0,160,220)
-                &.fade-enter-avtice,&.fade-leave-active
+                &.fade-enter-active,&.fade-leave-active
                     opacity: 1
-                   &.fade-enter,&.fade-leave-active transition: all 0.2s
+                &.fade-enter,&.fade-leave-active
+                    transition: all 0.2s
                 &.fade-enter,&.fade-leave-active
                     opacity: 0
         .info
@@ -222,11 +250,53 @@ import ratingselect from "../ratingselect/ratingselect.vue";
                 padding: 0 8px
                 font-size: 12px
                 color: rgb(77,85,93)
-        .title
+        .rating
             padding-top: 18px
-            padding-left: 18px
-            font-size: 14px
-            color: rgb(7,17,27)
-                
+            .title
+                padding-left: 18px
+                font-size: 14px
+                line-height: 14px
+                color: rgb(7,17,27)
+            .rating-wrapper
+                padding: 0 18px
+                .rating-item
+                    position: relative
+                    padding: 16px 0
+                    border-1px(rgba(7,17,27,0.1))
+                    .user
+                        position: absolute
+                        right: 0
+                        top: 16px
+                        font-size: 0
+                        line-height: 12px
+                        .name
+                            display: inline-block
+                            vertical-align: top
+                            font-size: 10px
+                            color: rgb(147,153,159)
+                            margin-right: 6px
+                        .avatar
+                            border-radius: 50%
+                    .time
+                        margin-right: 6px
+                        font-size: 10px
+                        color: rgb(147,153,159)
+                        line-height: 12px
+                    .text
+                        line-height: 16px
+                        font-size: 12px
+                        color: rgb(7,17,27)
+                        .icon-thumb_up,.icon-thumb_down
+                            margin-right: 4px
+                            line-height: 16px
+                            font-size: 12px
+                        .icon-thumb_up
+                            color: rgb(0,160,220)
+                        .icon-thumb_down
+                            color: rgb(147,153,159)
+                .no-rating
+                    padding: 16px 0
+                    font-size: 12px
+                    color: rgb(147,153,159)
 </style>
 

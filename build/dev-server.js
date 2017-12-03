@@ -41,7 +41,7 @@ apiRoutes.get('/goods',function(res, rep) {
   })
 })
 apiRoutes.get('/ratings',function(req,res) {
-  rep.send({
+  res.send({
     errorNumber: 0,
     data: ratings
   })
@@ -91,9 +91,9 @@ app.use(staticPath, express.static('./static'))
 
 var uri = 'http://localhost:' + port
 
-var _resolve
-var readyPromise = new Promise(resolve => {
-  _resolve = resolve
+var _resolve;
+var readyPromise = new Promise((resolve) => {
+  _resolve = resolve;
 })
 
 console.log('> Starting dev server...')

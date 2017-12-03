@@ -6,18 +6,26 @@
       <div class="tab-item"><router-link to="/ratings" tag="a">评论</router-link></div>
       <div class="tab-item"><router-link to="/seller" tag="a">商家</router-link></div>
     </div>
-    <router-view :seller="seller"></router-view>
+    <keep-alive>
+      <router-view :seller="seller" keep-alive></router-view>
+    </keep-alive>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import header from './components/header/header.vue';
+  import {urlParse} from './common/js/util'
   const ERR_OK = 0;
 export default {
   name: 'app',
   data () {
     return {
-      seller: {}
+      seller: {
+        id: (() => {
+          let qureyPram = urlParse();
+          return qureyPram.id;
+        })()
+      }
     }
   },
   components: {
@@ -27,7 +35,7 @@ export default {
     this.$http.get("api/seller").then((response) =>{
       response = response.data
       if (response.errorNumber == ERR_OK) {
-        this.seller = response.data
+        this.seller = Object.assign({},this.seller, response.data)
         console.log(response)
       }
     });
@@ -72,7 +80,7 @@ export default {
   font-size: 14px;
   color: rgb(77,85,93);
 }
-.tab-item>.active{
+.tab-item>.router-link-active{
   color: rgb(240,20,20);
 }
 </style>
